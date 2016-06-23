@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.karol.copynumberproject.MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/helloWorld"
+        app:layout_constraintLeft_toLeftOf="@+id/activity_main"
+        app:layout_constraintTop_toTopOf="@+id/activity_main"
+        app:layout_constraintRight_toRightOf="@+id/activity_main"
+        app:layout_constraintBottom_toBottomOf="@+id/activity_main" />
+
+    <Switch
+        android:text="Working in background"
+        android:layout_width="132dp"
+        android:layout_height="18dp"
+        android:id="@+id/switch1"
+        tools:layout_editor_absoluteY="24dp"
+        app:layout_constraintLeft_toLeftOf="@+id/activity_main"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp" />
+
+    <Switch
+        android:text="Autocall"
+        android:layout_width="82dp"
+        android:layout_height="28dp"
+        android:id="@+id/switch2"
+        app:layout_constraintRight_toRightOf="@+id/switch1"
+        app:layout_constraintBottom_toTopOf="@+id/helloWorld"
+        android:layout_marginBottom="128dp" />
+
+</android.support.constraint.ConstraintLayout>
