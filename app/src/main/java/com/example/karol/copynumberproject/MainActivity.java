@@ -8,8 +8,11 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.ClipboardManager;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +48,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        final EditText eventField = new EditText(this);
+        eventField.setText("1285526731468451");
+        linearLayout.addView(eventField);
 
         mContext = this.getApplicationContext();
 
@@ -60,8 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
         String number = ifNumberIntext(clipBordText);
 
+        Switch mySwitch = new Switch(this);
+        linearLayout.addView(mySwitch);
+
         //attach a listener to check for changes in state
-        Switch mySwitch = (Switch)findViewById(R.id.switch1);
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -70,17 +81,16 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplication(), "Background processing is on",
                         Toast.LENGTH_LONG).show();
 
-                Handler mHandler = new Handler(getMainLooper());
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT).show();
-                        launchBackgroundService();
-                    }
-                });
+                Intent webService = new Intent(getApplicationContext(),WebScanner.class);
+                webService.putExtra("event",eventField.getText().toString());
+                startService(webService);
+                startService(new Intent(getApplicationContext(), BinderService.class));
 
 
-            }});
+            }
+        });
+
+        setContentView(linearLayout);
     }
 
     private void launchBackgroundService() {
