@@ -10,6 +10,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -40,6 +42,13 @@ public class BinderService extends Service {
         mBuilder.setSmallIcon(R.drawable.dial_icon_dark);
         mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.dialicon));
         mBuilder.setPriority(Notification.PRIORITY_MAX);
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
 

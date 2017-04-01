@@ -3,13 +3,9 @@ package com.example.karol.copynumberproject;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.ClipboardManager;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,18 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static ClipboardManager clipboardManager;
     private static Context mContext;
-    private static TextView textView;
     private static Switch mySwitch;
-    private static Switch mySwichAutoDial;
 
-    public static boolean checkTheState(){
-        return mySwichAutoDial.isChecked();
-    }
-
-
-    public void onCheckedChanged(Switch mySwichAutoDial,
-                                 boolean isChecked) {
-    }
 
     public static void backgroundProcessIsOff(){
         mySwitch.setChecked(false);
@@ -53,12 +39,10 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         final EditText eventField = new EditText(this);
-        eventField.setText("1285526731468451");
+        eventField.setText("1264674010248873");
         linearLayout.addView(eventField);
 
         mContext = this.getApplicationContext();
-
-        textView = (TextView)findViewById(R.id.helloWorld);
 
         clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 
@@ -159,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 return number;
             }
         }
-        System.out.println("NO MATCH");
+        System.out.println("NO NUMBER FOUND");
         return null;
     }
 

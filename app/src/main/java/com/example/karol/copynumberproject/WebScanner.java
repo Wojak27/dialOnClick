@@ -5,17 +5,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -30,6 +29,8 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.regex.Matcher;
 
 /**
  * Created by Karol on 2/2/2017.
@@ -115,28 +116,6 @@ public class WebScanner extends Service {
 
         // Increase notification number every time a new notification arrives
         mBuilder.setNumber(1);
-        /*if (MainActivity.checkTheState()) {
-            Intent intentDial=new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+number));
-            intentDial.setData(Uri.parse("tel:" + number));
-            //startActivity(intentDial);
-            //resultIntent.putExtra("number",number);
-
-            //This ensures that navigating backward from the Activity leads out of the app to Home page
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-            // Adds the back stack for the Intent
-            stackBuilder.addParentStack(MainActivity.class);
-
-            // Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(intentDial);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_ONE_SHOT //can only be used once
-                    );
-            // start the activity when the user clicks the notification text
-            mBuilder.setContentIntent(resultPendingIntent);
-        } else {*/
         // Creates an explicit intent for an Activity in your app
         Intent intentDial = new Intent(Intent.ACTION_DIAL);
         intentDial.setData(Uri.parse("tel:" + number));
@@ -166,6 +145,23 @@ public class WebScanner extends Service {
         myNotificationManager.notify(112, mBuilder.build());
 
     }
+
+    private boolean isForSale(String currentPost){
+        ArrayList<String> listWithWordsForSale = new ArrayList<>();
+        listWithWordsForSale.add("säljer");
+        listWithWordsForSale.add("salu");
+        listWithWordsForSale.add("sälja");
+
+        for(String currentWord : listWithWordsForSale) {
+            if ( currentPost.toLowerCase().indexOf(currentWord.toLowerCase()) != -1 ) {
+
+                System.out.println("I found the keyword");
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void print(JSONObject json) throws JSONException{
         if(!currentPost.equals(json.getString("message"))){
             Log.d("log ", json.getString("message"));
@@ -174,17 +170,13 @@ public class WebScanner extends Service {
             if(number != null){
                 displayNotificationOne(number, currentPost);
 
+            }else if(isForSale(currentPost)){
+                displayNotificationOne("NO NUMBER", currentPost);
             }
         }else {
 
         }
 
-    }
-
-    public static void main() throws IOException, JSONException {
-        JSONObject json = readJsonFromUrl("https://graph.facebook.com/1285526731468451/feed?access_token=611636522345383|d832d238684ea6d9da977575f1a5de91");
-        Log.d("log: ",json.toString());
-        System.out.println(json.get("id"));
     }
     private class GetContacts extends AsyncTask<Void, Void, Void> {
 
