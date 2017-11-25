@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static ClipboardManager clipboardManager;
     private static Context mContext;
     private static Switch mySwitch;
+    public static String eventNumber = "1692180824159566";
 
 
     public static void backgroundProcessIsOff(){
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         final EditText eventField = new EditText(this);
-        eventField.setText("1264674010248873");
+        eventField.setText(eventNumber);
         linearLayout.addView(eventField);
 
         mContext = this.getApplicationContext();

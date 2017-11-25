@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 /**
  * Created by karol on 6/23/16.
@@ -33,79 +34,74 @@ public class BinderService extends Service {
 
         // Invoking the default notification service
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder = setNotifications(mBuilder,number);
+        playNotificationSound();
 
+        Log.w("displayNotificationOne","displayed");
+
+        //if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
+
+        // Increase notification number every time a new notification arrives
+        mBuilder.setNumber(1);
+
+        //This ensures that navigating backward from the Activity leads out of the app to Home page
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+        // Adds the back stack for the Intent
+        stackBuilder.addParentStack(MainActivity.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+
+        //***************************************************************************************************************
+        // under construction
+        //***************************************************************************************************************
+//            if(number.equals(null)){
+//                MainActivity.eventNumber
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
+//                startActivity(browserIntent);
+//            }
+        //***************************************************************************************************************
+        //***************************************************************************************************************
+
+        // Creates an explicit intent for an Activity in your app
+        Intent intentDial = new Intent(Intent.ACTION_DIAL);
+        intentDial.setData(Uri.parse("tel:" + number));
+        stackBuilder.addNextIntent(intentDial);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_ONE_SHOT //can only be used once
+                );
+        // start the activity when the user clicks the notification text
+        mBuilder.setContentIntent(resultPendingIntent);
+        //}
+        myNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // pass the Notification object to the system
+        myNotificationManager.notify(112, mBuilder.build());
+
+    }
+    private void playNotificationSound(){
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            Log.w("Failed", "sound played");
+            ringtone.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.w("Failed", "to play notification sound");
+        }
+    }
+
+    private NotificationCompat.Builder setNotifications(NotificationCompat.Builder mBuilder, String number){
         mBuilder.setAutoCancel(true);
-
         mBuilder.setContentTitle("I've found a number: " + number);
         mBuilder.setContentText("To dial it, just tap me");
         mBuilder.setTicker("Explicit: New Message Received!");
         mBuilder.setSmallIcon(R.drawable.dial_icon_dark);
         mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.dialicon));
         mBuilder.setPriority(Notification.PRIORITY_MAX);
-        try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
-
-        // Increase notification number every time a new notification arrives
-        mBuilder.setNumber(1);
-        /*if (MainActivity.checkTheState()) {
-            Intent intentDial=new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+number));
-            intentDial.setData(Uri.parse("tel:" + number));
-            //startActivity(intentDial);
-            //resultIntent.putExtra("number",number);
-
-            //This ensures that navigating backward from the Activity leads out of the app to Home page
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-            // Adds the back stack for the Intent
-            stackBuilder.addParentStack(MainActivity.class);
-
-            // Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(intentDial);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_ONE_SHOT //can only be used once
-                    );
-            // start the activity when the user clicks the notification text
-            mBuilder.setContentIntent(resultPendingIntent);
-        } else {*/
-            // Creates an explicit intent for an Activity in your app
-            Intent intentDial = new Intent(Intent.ACTION_DIAL);
-            intentDial.setData(Uri.parse("tel:" + number));
-            //startActivity(intentDial);
-            //resultIntent.putExtra("number",number);
-
-            //This ensures that navigating backward from the Activity leads out of the app to Home page
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-            // Adds the back stack for the Intent
-            stackBuilder.addParentStack(MainActivity.class);
-
-            // Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(intentDial);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_ONE_SHOT //can only be used once
-                    );
-            // start the activity when the user clicks the notification text
-            mBuilder.setContentIntent(resultPendingIntent);
-        //}
-
-        myNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // pass the Notification object to the system
-        myNotificationManager.notify(112, mBuilder.build());
-
+        return mBuilder;
     }
-
     @Override
     public void onCreate() {
         clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
