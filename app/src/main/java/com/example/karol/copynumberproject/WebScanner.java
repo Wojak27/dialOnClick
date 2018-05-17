@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -33,8 +31,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.regex.Matcher;
 
 /**
  * Created by Karol on 2/2/2017.
@@ -65,15 +61,23 @@ public class WebScanner extends Service {
 
     @Override
     public void onCreate() {
+        runTheLoopOnNewThread();
+    }
 
+    private void runTheLoopOnNewThread(){
         new Thread(new Runnable(){
             public void run() {
                 // TODO Auto-generated method stub
                 while(true)
                 {
-                    SystemClock.sleep(1000);
-                    new GetContacts().execute();
-                    //REST OF CODE HERE//
+                    try {
+                        SystemClock.sleep(1000);
+                        new GetContacts().execute();
+                        //REST OF CODE HERE//
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        runTheLoopOnNewThread();
+                    }
                 }
 
             }
@@ -134,8 +138,6 @@ public class WebScanner extends Service {
             mBuilder.setContentTitle(number);
             Intent intentDial = new Intent(Intent.ACTION_DIAL);
             intentDial.setData(Uri.parse("tel:" + number));
-            //startActivity(intentDial);
-            //resultIntent.putExtra("number",number);
 
             //This ensures that navigating backward from the Activity leads out of the app to Home page
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -161,12 +163,7 @@ public class WebScanner extends Service {
         mBuilder.setStyle(new NotificationCompat.BigTextStyle()
                 .bigText(post));
 
-
-        // Increase notification number every time a new notification arrives
         mBuilder.setNumber(1);
-        // Creates an explicit intent for an Activity in your app
-
-        //}
 
         myNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -187,7 +184,7 @@ public class WebScanner extends Service {
         }
     }
 
-    private boolean isForSale(String currentPost){
+    private boolean isForSaleFilter(String currentPost){
         ArrayList<String> listWithWordsForSale = new ArrayList<>();
         listWithWordsForSale.add("säljer");
         listWithWordsForSale.add("salu");
@@ -224,7 +221,7 @@ public class WebScanner extends Service {
 
             }else
                 // Displays new notification if the kaywords are found in the text
-                if(isForSale(currentPost)){
+                if(isForSaleFilter(currentPost)){
                 displayNotificationOne(null, currentPost);
             }
         }else {
